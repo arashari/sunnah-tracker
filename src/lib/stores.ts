@@ -118,3 +118,55 @@ function createFastsStore() {
 }
 
 export const visibleFasts = createFastsStore();
+
+export const notificationsEnabled = writable(false);
+
+export function initNotifications() {
+	if (typeof localStorage !== 'undefined') {
+		const saved = localStorage.getItem('notificationsEnabled');
+		if (saved === 'true') {
+			notificationsEnabled.set(true);
+		}
+	}
+}
+
+export async function requestNotificationPermission() {
+	if (!('Notification' in window)) {
+		alert('Notifications not supported');
+		return false;
+	}
+
+	if (Notification.permission === 'granted') {
+		notificationsEnabled.set(true);
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem('notificationsEnabled', 'true');
+		}
+		return true;
+	}
+
+	if (Notification.permission !== 'denied') {
+		const permission = await Notification.requestPermission();
+		if (permission === 'granted') {
+			notificationsEnabled.set(true);
+			if (typeof localStorage !== 'undefined') {
+				localStorage.setItem('notificationsEnabled', 'true');
+			}
+			return true;
+		}
+	}
+
+	return false;
+}
+
+export async function unsubscribeFromNotifications() {
+	notificationsEnabled.set(false);
+	if (typeof localStorage !== 'undefined') {
+		localStorage.setItem('notificationsEnabled', 'false');
+	}
+
+	// @ts-ignore - OneSignal SDK
+	if (window.OneSignal) {
+		// @ts-ignore
+		await window.OneSignal.setSubscription(false);
+	}
+}

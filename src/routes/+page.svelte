@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { locale, theme, visibleFasts, type Theme, type VisibleFasts } from '$lib/stores';
+	import { locale, theme, visibleFasts, notificationsEnabled, initNotifications, requestNotificationPermission, unsubscribeFromNotifications, type Theme, type VisibleFasts } from '$lib/stores';
 	import { t, type Locale } from '$lib/i18n';
 	import { getHijriDate, isAyyamulBidh, isTasuAshura, isYawnArafat } from '$lib/hijri';
 	import { fasts, type Fast } from '$lib/fasts';
@@ -125,6 +125,7 @@
 		locale.init();
 		theme.init();
 		visibleFasts.init();
+		initNotifications();
 	});
 
 	$: currentLocale = $locale;
@@ -136,6 +137,18 @@
 	$: todayFasts = getFastsForDate(new Date(), currentVisibleFasts);
 	$: hijriDate = getHijriDate(new Date(viewYear, viewMonth, 1));
 	$: todayHijri = getHijriDate(new Date());
+
+	async function toggleNotifications() {
+		if ($notificationsEnabled) {
+			notificationsEnabled.set(false);
+			localStorage.setItem('notificationsEnabled', 'false');
+		} else {
+			const granted = await requestNotificationPermission();
+			if (granted) {
+				notificationsEnabled.set(true);
+			}
+		}
+	}
 </script>
 
 <svelte:head>
@@ -217,6 +230,28 @@
 							</button>
 						</div>
 					</div>
+
+					<div class="flex items-center justify-between">
+						<span class="text-sm text-gray-600 dark:text-gray-400">Notifications</span>
+						<button
+							onclick={toggleNotifications}
+							class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors {notificationsEnabled ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400'}"
+						>
+							{notificationsEnabled ? 'On' : 'Off'}
+						</button>
+					</div>
+
+					{#if notificationsEnabled}
+						<button
+							onclick={unsubscribeFromNotifications}
+							class="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+							</svg>
+							Unsubscribe Notifications
+						</button>
+					{/if}
 
 					<a
 						href="/deeds"
