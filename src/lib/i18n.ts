@@ -37,7 +37,11 @@ export const translations = {
 		optional: 'Nawafil',
 		nextMonth: 'Bulan Berikutnya',
 		prevMonth: 'Bulan Sebelumnya',
-		selectMonth: 'Pilih Bulan'
+		selectMonth: 'Pilih Bulan',
+		notifyTitle: 'Aktifkan Notifikasi',
+		notifyDesc: 'Dapatkan pengingat 1 hari sebelum puasa sunnah',
+		notifyEnable: 'Aktifkan',
+		notifyDismiss: 'Tutup'
 	},
 	en: {
 		appName: 'Sunnah Tracker',
@@ -75,7 +79,11 @@ export const translations = {
 		optional: 'Nawafil',
 		nextMonth: 'Next Month',
 		prevMonth: 'Previous Month',
-		selectMonth: 'Select Month'
+		selectMonth: 'Select Month',
+		notifyTitle: 'Enable Notifications',
+		notifyDesc: 'Get reminders a day before sunnah fasting days',
+		notifyEnable: 'Enable',
+		notifyDismiss: 'Dismiss'
 	}
 } as const;
 
