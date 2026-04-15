@@ -11,6 +11,7 @@
 	let showSettings = false;
 	let showFastModal = false;
 	let selectedFast: Fast | null = null;
+	let showBanner = false;
 
 	const monthNames = {
 		id: ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
@@ -126,6 +127,14 @@
 		theme.init();
 		visibleFasts.init();
 		initNotifications();
+
+		if (typeof localStorage !== 'undefined') {
+			const dismissed = localStorage.getItem('notifyBannerDismissed');
+			const enabled = localStorage.getItem('notificationsEnabled');
+			if (dismissed !== 'true' && enabled !== 'true') {
+				showBanner = true;
+			}
+		}
 	});
 
 	$: currentLocale = $locale;
@@ -140,13 +149,9 @@
 
 	async function toggleNotifications() {
 		if ($notificationsEnabled) {
-			notificationsEnabled.set(false);
-			localStorage.setItem('notificationsEnabled', 'false');
+			await unsubscribeFromNotifications();
 		} else {
-			const granted = await requestNotificationPermission();
-			if (granted) {
-				notificationsEnabled.set(true);
-			}
+			await requestNotificationPermission();
 		}
 	}
 </script>
@@ -235,23 +240,11 @@
 						<span class="text-sm text-gray-600 dark:text-gray-400">Notifications</span>
 						<button
 							onclick={toggleNotifications}
-							class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors {notificationsEnabled ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400'}"
+							class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors {$notificationsEnabled ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400'}"
 						>
-							{notificationsEnabled ? 'On' : 'Off'}
+							{$notificationsEnabled ? 'On' : 'Off'}
 						</button>
 					</div>
-
-					{#if notificationsEnabled}
-						<button
-							onclick={unsubscribeFromNotifications}
-							class="flex items-center gap-2 w-full px-3 py-2 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-						>
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
-							</svg>
-							Unsubscribe Notifications
-						</button>
-					{/if}
 
 					<a
 						href="/deeds"
@@ -267,6 +260,41 @@
 			</div>
 		{/if}
 	</header>
+
+	{#if showBanner && !$notificationsEnabled}
+		<div class="bg-emerald-600 text-white px-4 py-3 flex items-center gap-3" role="alert">
+			<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+			</svg>
+			<div class="flex-1 min-w-0">
+				<p class="text-sm font-semibold">{t('notifyTitle', currentLocale)}</p>
+				<p class="text-xs opacity-90">{t('notifyDesc', currentLocale)}</p>
+			</div>
+			<button
+				onclick={async () => {
+					await requestNotificationPermission();
+					if ($notificationsEnabled) showBanner = false;
+				}}
+				class="px-3 py-1.5 text-xs font-medium bg-white text-emerald-700 rounded-full hover:bg-emerald-50 transition-colors flex-shrink-0"
+			>
+				{t('notifyEnable', currentLocale)}
+			</button>
+			<button
+				onclick={() => {
+					showBanner = false;
+					if (typeof localStorage !== 'undefined') {
+						localStorage.setItem('notifyBannerDismissed', 'true');
+					}
+				}}
+				class="p-1 hover:bg-emerald-700 rounded transition-colors flex-shrink-0"
+				aria-label="{t('notifyDismiss', currentLocale)}"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+				</svg>
+			</button>
+		</div>
+	{/if}
 
 	<main class="px-3 py-4 max-w-lg mx-auto">
 		<div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
