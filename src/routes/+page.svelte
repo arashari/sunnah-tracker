@@ -237,7 +237,7 @@
 					</div>
 
 					<div class="flex items-center justify-between">
-						<span class="text-sm text-gray-600 dark:text-gray-400">Notifications</span>
+						<span class="text-sm text-gray-600 dark:text-gray-400">Notifications (Experimental)</span>
 						<button
 							onclick={toggleNotifications}
 							class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors {$notificationsEnabled ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400'}"

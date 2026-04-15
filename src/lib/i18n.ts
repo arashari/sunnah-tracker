@@ -39,7 +39,7 @@ export const translations = {
 		prevMonth: 'Bulan Sebelumnya',
 		selectMonth: 'Pilih Bulan',
 		notifyTitle: 'Aktifkan Notifikasi',
-		notifyDesc: 'Dapatkan pengingat 1 hari sebelum puasa sunnah',
+		notifyDesc: 'Dapatkan pengingat 1 hari sebelum puasa sunnah (experimental)',
 		notifyEnable: 'Aktifkan',
 		notifyDismiss: 'Tutup'
 	},
@@ -81,7 +81,7 @@ export const translations = {
 		prevMonth: 'Previous Month',
 		selectMonth: 'Select Month',
 		notifyTitle: 'Enable Notifications',
-		notifyDesc: 'Get reminders a day before sunnah fasting days',
+		notifyDesc: 'Get reminders a day before sunnah fasting days (experimental)',
 		notifyEnable: 'Enable',
 		notifyDismiss: 'Dismiss'
 	}
