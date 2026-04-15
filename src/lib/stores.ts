@@ -141,6 +141,9 @@ export async function requestNotificationPermission() {
 		if (typeof localStorage !== 'undefined') {
 			localStorage.setItem('notificationsEnabled', 'true');
 		}
+		if (window.OneSignal) {
+			await window.OneSignal.User.PushSubscription.optIn();
+		}
 		return true;
 	}
 
@@ -150,6 +153,9 @@ export async function requestNotificationPermission() {
 			notificationsEnabled.set(true);
 			if (typeof localStorage !== 'undefined') {
 				localStorage.setItem('notificationsEnabled', 'true');
+			}
+			if (window.OneSignal) {
+				await window.OneSignal.User.PushSubscription.optIn();
 			}
 			return true;
 		}
@@ -164,9 +170,7 @@ export async function unsubscribeFromNotifications() {
 		localStorage.setItem('notificationsEnabled', 'false');
 	}
 
-	// @ts-ignore - OneSignal SDK
 	if (window.OneSignal) {
-		// @ts-ignore
-		await window.OneSignal.setSubscription(false);
+		await window.OneSignal.User.PushSubscription.optOut();
 	}
 }

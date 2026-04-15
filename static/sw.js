@@ -1,8 +1,15 @@
+importScripts("https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.sw.js");
+
 const CACHE_NAME = 'sunnah-tracker-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/deeds',
   '/manifest.json'
+];
+
+const CACHE_EXCLUDE_DOMAINS = [
+  'onesignal.com',
+  'cdn.onesignal.com'
 ];
 
 self.addEventListener('install', (event) => {
@@ -29,7 +36,10 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
-  
+
+  const url = new URL(event.request.url);
+  if (CACHE_EXCLUDE_DOMAINS.some(domain => url.hostname.endsWith(domain))) return;
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
