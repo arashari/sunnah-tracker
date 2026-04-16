@@ -136,8 +136,12 @@ export async function requestNotificationPermission() {
 		return false;
 	}
 
+	if (Notification.permission === 'denied') {
+		return false;
+	}
+
 	if (window.OneSignal) {
-		await window.OneSignal.Slidedown.promptPush();
+		await window.OneSignal.Slidedown.promptPush({ force: true });
 		const optedIn = window.OneSignal.User.PushSubscription.optedIn;
 		notificationsEnabled.set(optedIn);
 		if (typeof localStorage !== 'undefined') {
@@ -154,15 +158,13 @@ export async function requestNotificationPermission() {
 		return true;
 	}
 
-	if (Notification.permission !== 'denied') {
-		const permission = await Notification.requestPermission();
-		if (permission === 'granted') {
-			notificationsEnabled.set(true);
-			if (typeof localStorage !== 'undefined') {
-				localStorage.setItem('notificationsEnabled', 'true');
-			}
-			return true;
+	const permission = await Notification.requestPermission();
+	if (permission === 'granted') {
+		notificationsEnabled.set(true);
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem('notificationsEnabled', 'true');
 		}
+		return true;
 	}
 
 	return false;

@@ -10,7 +10,7 @@ export declare global {
 				};
 			};
 			Slidedown: {
-				promptPush: () => Promise<void>;
+				promptPush: (options?: { force?: boolean }) => Promise<void>;
 			};
 		}) => Promise<void>)[];
 		OneSignal?: {
@@ -22,7 +22,7 @@ export declare global {
 				};
 			};
 			Slidedown: {
-				promptPush: () => Promise<void>;
+				promptPush: (options?: { force?: boolean }) => Promise<void>;
 			};
 		};
 	}
