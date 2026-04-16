@@ -9,6 +9,9 @@ export declare global {
 					optedIn: boolean;
 				};
 			};
+			Slidedown: {
+				promptPush: () => Promise<void>;
+			};
 		}) => Promise<void>)[];
 		OneSignal?: {
 			User: {
@@ -17,6 +20,9 @@ export declare global {
 					optOut: () => Promise<void>;
 					optedIn: boolean;
 				};
+			};
+			Slidedown: {
+				promptPush: () => Promise<void>;
 			};
 		};
 	}

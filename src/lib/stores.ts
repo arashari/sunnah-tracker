@@ -136,6 +136,18 @@ export async function requestNotificationPermission() {
 		return false;
 	}
 
+	if (window.OneSignal) {
+		await window.OneSignal.Slidedown.promptPush();
+		if (window.OneSignal.User.PushSubscription.optedIn) {
+			notificationsEnabled.set(true);
+			if (typeof localStorage !== 'undefined') {
+				localStorage.setItem('notificationsEnabled', 'true');
+			}
+			return true;
+		}
+		return false;
+	}
+
 	if (Notification.permission === 'granted') {
 		notificationsEnabled.set(true);
 		if (typeof localStorage !== 'undefined') {
