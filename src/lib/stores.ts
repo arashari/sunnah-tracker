@@ -121,7 +121,15 @@ export const visibleFasts = createFastsStore();
 
 export const notificationsEnabled = writable(false);
 
-export function initNotifications() {
+export async function initNotifications() {
+	if (typeof window !== 'undefined' && window.OneSignal && window.OneSignal.User.PushSubscription.optedIn) {
+		notificationsEnabled.set(true);
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem('notificationsEnabled', 'true');
+		}
+		return;
+	}
+
 	if (typeof localStorage !== 'undefined') {
 		const saved = localStorage.getItem('notificationsEnabled');
 		if (saved === 'true') {

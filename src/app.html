@@ -44,18 +44,6 @@
 						}
 					}
 				});
-
-				if (typeof localStorage !== 'undefined') {
-					const saved = localStorage.getItem('notificationsEnabled');
-					const wantNotifications = saved === 'true';
-					const optedIn = OneSignal.User.PushSubscription.optedIn;
-
-					if (wantNotifications && !optedIn) {
-						await OneSignal.User.PushSubscription.optIn();
-					} else if (!wantNotifications && optedIn) {
-						await OneSignal.User.PushSubscription.optOut();
-					}
-				}
 			});
 		</script>
 	</body>

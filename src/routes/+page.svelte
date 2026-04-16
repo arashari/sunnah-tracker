@@ -122,11 +122,11 @@
 		}
 	}
 
-	onMount(() => {
+	onMount(async () => {
 		locale.init();
 		theme.init();
 		visibleFasts.init();
-		initNotifications();
+		await initNotifications();
 
 		if (typeof localStorage !== 'undefined') {
 			const dismissed = localStorage.getItem('notifyBannerDismissed');
