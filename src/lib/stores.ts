@@ -138,23 +138,18 @@ export async function requestNotificationPermission() {
 
 	if (window.OneSignal) {
 		await window.OneSignal.Slidedown.promptPush();
-		if (window.OneSignal.User.PushSubscription.optedIn) {
-			notificationsEnabled.set(true);
-			if (typeof localStorage !== 'undefined') {
-				localStorage.setItem('notificationsEnabled', 'true');
-			}
-			return true;
+		const optedIn = window.OneSignal.User.PushSubscription.optedIn;
+		notificationsEnabled.set(optedIn);
+		if (typeof localStorage !== 'undefined') {
+			localStorage.setItem('notificationsEnabled', optedIn ? 'true' : 'false');
 		}
-		return false;
+		return optedIn;
 	}
 
 	if (Notification.permission === 'granted') {
 		notificationsEnabled.set(true);
 		if (typeof localStorage !== 'undefined') {
 			localStorage.setItem('notificationsEnabled', 'true');
-		}
-		if (window.OneSignal) {
-			await window.OneSignal.User.PushSubscription.optIn();
 		}
 		return true;
 	}
@@ -165,9 +160,6 @@ export async function requestNotificationPermission() {
 			notificationsEnabled.set(true);
 			if (typeof localStorage !== 'undefined') {
 				localStorage.setItem('notificationsEnabled', 'true');
-			}
-			if (window.OneSignal) {
-				await window.OneSignal.User.PushSubscription.optIn();
 			}
 			return true;
 		}

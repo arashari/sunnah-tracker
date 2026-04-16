@@ -21,6 +21,28 @@
 			OneSignalDeferred.push(async function(OneSignal) {
 				await OneSignal.init({
 					appId: "02c6ae39-68c7-4145-a891-582c9c33e6ea",
+					serviceWorkerParam: { scope: '/push/onesignal/' },
+					serviceWorkerPath: '/push/onesignal/OneSignalSDKWorker.js',
+					promptOptions: {
+						slidedown: {
+							prompts: [{
+								type: 'push',
+								autoPrompt: false,
+								text: {
+									en: {
+										actionMessage: 'Get notified a day before sunnah fasting days so you never miss Ayyamul Bidh, Ashura, and more.',
+										acceptButton: 'Allow',
+										cancelButton: 'Maybe Later'
+									},
+									id: {
+										actionMessage: 'Dapatkan notifikasi sehari sebelum hari puasa sunnah agar tidak ketinggalan Ayyamul Bidh, Ashura, dan lainnya.',
+										acceptButton: 'Izinkan',
+										cancelButton: 'Nanti Saja'
+									}
+								}
+							}]
+						}
+					}
 				});
 
 				if (typeof localStorage !== 'undefined') {
