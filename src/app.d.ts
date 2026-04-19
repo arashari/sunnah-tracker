@@ -7,6 +7,8 @@ export declare global {
 					optIn: () => Promise<void>;
 					optOut: () => Promise<void>;
 					optedIn: boolean;
+					addEventListener: (event: 'change', listener: () => void) => void;
+					removeEventListener: (event: 'change', listener: () => void) => void;
 				};
 			};
 			Slidedown: {
@@ -19,6 +21,8 @@ export declare global {
 					optIn: () => Promise<void>;
 					optOut: () => Promise<void>;
 					optedIn: boolean;
+					addEventListener: (event: 'change', listener: () => void) => void;
+					removeEventListener: (event: 'change', listener: () => void) => void;
 				};
 			};
 			Slidedown: {

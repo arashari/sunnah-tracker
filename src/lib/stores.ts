@@ -121,12 +121,20 @@ export const visibleFasts = createFastsStore();
 
 export const notificationsEnabled = writable(false);
 
+function syncNotificationState(optedIn: boolean) {
+	notificationsEnabled.set(optedIn);
+	if (typeof localStorage !== 'undefined') {
+		localStorage.setItem('notificationsEnabled', optedIn ? 'true' : 'false');
+	}
+}
+
 export async function initNotifications() {
-	if (typeof window !== 'undefined' && window.OneSignal && window.OneSignal.User.PushSubscription.optedIn) {
-		notificationsEnabled.set(true);
-		if (typeof localStorage !== 'undefined') {
-			localStorage.setItem('notificationsEnabled', 'true');
-		}
+	if (typeof window !== 'undefined' && window.OneSignal) {
+		syncNotificationState(window.OneSignal.User.PushSubscription.optedIn);
+
+		window.OneSignal.User.PushSubscription.addEventListener('change', () => {
+			syncNotificationState(window.OneSignal!.User.PushSubscription.optedIn);
+		});
 		return;
 	}
 
@@ -150,28 +158,17 @@ export async function requestNotificationPermission() {
 
 	if (window.OneSignal) {
 		await window.OneSignal.Slidedown.promptPush({ force: true });
-		const optedIn = window.OneSignal.User.PushSubscription.optedIn;
-		notificationsEnabled.set(optedIn);
-		if (typeof localStorage !== 'undefined') {
-			localStorage.setItem('notificationsEnabled', optedIn ? 'true' : 'false');
-		}
-		return optedIn;
+		return window.OneSignal.User.PushSubscription.optedIn;
 	}
 
 	if (Notification.permission === 'granted') {
-		notificationsEnabled.set(true);
-		if (typeof localStorage !== 'undefined') {
-			localStorage.setItem('notificationsEnabled', 'true');
-		}
+		syncNotificationState(true);
 		return true;
 	}
 
 	const permission = await Notification.requestPermission();
 	if (permission === 'granted') {
-		notificationsEnabled.set(true);
-		if (typeof localStorage !== 'undefined') {
-			localStorage.setItem('notificationsEnabled', 'true');
-		}
+		syncNotificationState(true);
 		return true;
 	}
 
@@ -179,12 +176,9 @@ export async function requestNotificationPermission() {
 }
 
 export async function unsubscribeFromNotifications() {
-	notificationsEnabled.set(false);
-	if (typeof localStorage !== 'undefined') {
-		localStorage.setItem('notificationsEnabled', 'false');
-	}
-
 	if (window.OneSignal) {
 		await window.OneSignal.User.PushSubscription.optOut();
+	} else {
+		syncNotificationState(false);
 	}
 }
