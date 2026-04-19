@@ -237,7 +237,7 @@
 					</div>
 
 					<div class="flex items-center justify-between">
-						<span class="text-sm text-gray-600 dark:text-gray-400">Notifications (Experimental)</span>
+						<span class="text-sm text-gray-600 dark:text-gray-400">Notifications</span>
 						<button
 							onclick={toggleNotifications}
 							disabled={$notificationsEnabled === null}
