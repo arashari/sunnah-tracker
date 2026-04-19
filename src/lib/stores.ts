@@ -180,3 +180,14 @@ export async function unsubscribeFromNotifications() {
 		syncNotificationState(false);
 	}
 }
+
+export function sendTestNotification() {
+	if (!('Notification' in window)) return;
+
+	if (Notification.permission === 'granted') {
+		new Notification('🌙 Sunnah Tracker', {
+			body: 'Notifications are working! You will be reminded before sunnah fasting days.',
+			icon: '/icon-192.png'
+		});
+	}
+}

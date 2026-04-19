@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { locale, theme, visibleFasts, notificationsEnabled, initNotifications, requestNotificationPermission, unsubscribeFromNotifications, type Theme, type VisibleFasts } from '$lib/stores';
+	import { locale, theme, visibleFasts, notificationsEnabled, initNotifications, requestNotificationPermission, unsubscribeFromNotifications, sendTestNotification, type Theme, type VisibleFasts } from '$lib/stores';
 	import { t, type Locale } from '$lib/i18n';
 	import { getHijriDate, isAyyamulBidh, isTasuAshura, isYawnArafat } from '$lib/hijri';
 	import { fasts, type Fast } from '$lib/fasts';
@@ -246,6 +246,18 @@
 							{$notificationsEnabled === true ? 'On' : $notificationsEnabled === false ? 'Off' : '—'}
 						</button>
 					</div>
+
+					{#if $notificationsEnabled === true}
+						<button
+							onclick={sendTestNotification}
+							class="flex items-center gap-2 w-full px-3 py-2 text-xs text-emerald-600 dark:text-emerald-400 hover:bg-stone-50 dark:hover:bg-stone-700 rounded-lg transition-colors"
+						>
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+							</svg>
+							{t('testNotification', currentLocale)}
+						</button>
+					{/if}
 
 					<a
 						href="/deeds"
