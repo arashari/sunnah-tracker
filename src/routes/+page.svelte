@@ -130,8 +130,7 @@
 
 		if (typeof localStorage !== 'undefined') {
 			const dismissed = localStorage.getItem('notifyBannerDismissed');
-			const enabled = localStorage.getItem('notificationsEnabled');
-			if (dismissed !== 'true' && enabled !== 'true') {
+			if (dismissed !== 'true') {
 				showBanner = true;
 			}
 		}
@@ -148,6 +147,7 @@
 	$: todayHijri = getHijriDate(new Date());
 
 	async function toggleNotifications() {
+		if ($notificationsEnabled === null) return;
 		if ($notificationsEnabled) {
 			await unsubscribeFromNotifications();
 		} else {
@@ -240,9 +240,10 @@
 						<span class="text-sm text-gray-600 dark:text-gray-400">Notifications (Experimental)</span>
 						<button
 							onclick={toggleNotifications}
-							class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors {$notificationsEnabled ? 'bg-emerald-600 text-white' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400'}"
+							disabled={$notificationsEnabled === null}
+							class="px-3 py-1.5 text-xs font-medium rounded-full transition-colors {$notificationsEnabled === true ? 'bg-emerald-600 text-white' : $notificationsEnabled === false ? 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400' : 'bg-gray-200 dark:bg-gray-600 text-gray-400 dark:text-gray-500 cursor-wait'}"
 						>
-							{$notificationsEnabled ? 'On' : 'Off'}
+							{$notificationsEnabled === true ? 'On' : $notificationsEnabled === false ? 'Off' : '—'}
 						</button>
 					</div>
 
@@ -261,7 +262,7 @@
 		{/if}
 	</header>
 
-	{#if showBanner && !$notificationsEnabled}
+	{#if showBanner && $notificationsEnabled === false}
 		<div class="bg-emerald-600 text-white px-4 py-3 flex items-center gap-3" role="alert">
 			<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />

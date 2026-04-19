@@ -44,6 +44,13 @@
 						}
 					}
 				});
+
+				window.dispatchEvent(new CustomEvent('onesignal-ready', { detail: { optedIn: OneSignal.User.PushSubscription.optedIn } }));
+				window.dispatchEvent(new CustomEvent('onesignal-subscription-change', { detail: { optedIn: OneSignal.User.PushSubscription.optedIn } }));
+
+				OneSignal.User.PushSubscription.addEventListener('change', function() {
+					window.dispatchEvent(new CustomEvent('onesignal-subscription-change', { detail: { optedIn: OneSignal.User.PushSubscription.optedIn } }));
+				});
 			});
 		</script>
 	</body>

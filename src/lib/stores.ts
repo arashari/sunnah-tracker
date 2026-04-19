@@ -119,46 +119,43 @@ function createFastsStore() {
 
 export const visibleFasts = createFastsStore();
 
-export const notificationsEnabled = writable(false);
+export const notificationsEnabled = writable<boolean | null>(null);
 
 function syncNotificationState(optedIn: boolean) {
 	notificationsEnabled.set(optedIn);
-	if (typeof localStorage !== 'undefined') {
-		localStorage.setItem('notificationsEnabled', optedIn ? 'true' : 'false');
-	}
 }
 
 export async function initNotifications() {
-	if (typeof window !== 'undefined' && window.OneSignal) {
-		syncNotificationState(window.OneSignal.User.PushSubscription.optedIn);
+	if (typeof window !== 'undefined') {
+		window.addEventListener('onesignal-ready', ((e: CustomEvent) => {
+			syncNotificationState(e.detail.optedIn);
+		}) as EventListener);
 
-		window.OneSignal.User.PushSubscription.addEventListener('change', () => {
-			syncNotificationState(window.OneSignal!.User.PushSubscription.optedIn);
-		});
-		return;
-	}
-
-	if (typeof localStorage !== 'undefined') {
-		const saved = localStorage.getItem('notificationsEnabled');
-		if (saved === 'true') {
-			notificationsEnabled.set(true);
-		}
+		window.addEventListener('onesignal-subscription-change', ((e: CustomEvent) => {
+			syncNotificationState(e.detail.optedIn);
+		}) as EventListener);
 	}
 }
 
 export async function requestNotificationPermission() {
 	if (!('Notification' in window)) {
-		alert('Notifications not supported');
 		return false;
 	}
 
 	if (Notification.permission === 'denied') {
+		syncNotificationState(false);
 		return false;
 	}
 
 	if (window.OneSignal) {
-		await window.OneSignal.Slidedown.promptPush({ force: true });
-		return window.OneSignal.User.PushSubscription.optedIn;
+		if (Notification.permission === 'granted') {
+			await window.OneSignal.User.PushSubscription.optIn();
+		} else {
+			await window.OneSignal.Slidedown.promptPush({ force: true });
+		}
+		const optedIn = window.OneSignal.User.PushSubscription.optedIn;
+		syncNotificationState(optedIn);
+		return optedIn;
 	}
 
 	if (Notification.permission === 'granted') {
@@ -172,6 +169,7 @@ export async function requestNotificationPermission() {
 		return true;
 	}
 
+	syncNotificationState(false);
 	return false;
 }
 
